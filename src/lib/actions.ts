@@ -72,3 +72,24 @@ export async function deleteTask(id: string) {
 
   revalidatePath('/tasks');
 }
+
+export async function updateTask(
+  id: string,
+  data: { title?: string; priority?: string; dueDate?: string | null }
+) {
+  const session = await auth();
+  if (!session?.user?.email) throw new Error('No autorizado');
+
+  await prisma.task.update({
+    where: { id },
+    data: {
+      ...(data.title && { title: data.title }),
+      ...(data.priority && { priority: data.priority }),
+      ...(data.dueDate !== undefined && {
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      }),
+    },
+  });
+
+  revalidatePath('/tasks');
+}
