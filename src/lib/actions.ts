@@ -20,7 +20,7 @@ export async function getTasks() {
   });
 }
 
-export async function createTask(title: string) {
+export async function createTask(title: string, priority: string = 'medium', dueDate?: string) {
   const session = await auth();
   if (!session?.user?.email) throw new Error('No autorizado');
 
@@ -41,6 +41,8 @@ export async function createTask(title: string) {
   await prisma.task.create({
     data: {
       title,
+      priority,
+      dueDate: dueDate ? new Date(dueDate) : null,
       userId: user.id,
     },
   });
